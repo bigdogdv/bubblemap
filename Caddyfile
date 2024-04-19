@@ -1,0 +1,6 @@
+www.sapsandpit.com {
+    redir https://sapsandpit.com{uri}
+}
+sapsandpit.com {
+    reverse_proxy localhost:8000
+}
