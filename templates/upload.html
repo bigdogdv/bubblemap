@@ -1,13 +1,112 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <title>Upload CSV</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Geo Topology Bubble Map - Upload CSV</title>
+    <style>
+      body {
+        font-family: "Arial", sans-serif;
+        background-color: #282c34; /* Dark background for a modern look */
+        color: #fff; /* White text color */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start; /* Align content to the top */
+        min-height: 100vh;
+        margin: 0;
+        padding-top: 40px; /* Add top padding to push the content down */
+      }
+
+      h1 {
+        font-size: 24px;
+        color: #61dafb; /* Light blue color for accents */
+        margin-top: 100; /* Remove top margin from h1 */
+        padding-top: 180px; /* Add padding at the top of the h1 */
+      }
+
+      form {
+        margin: 10px auto; /* Adjusted margin for space around form */
+      }
+
+      .info {
+        text-align: center;
+        width: 80%;
+        margin-top: 0; /* Remove additional space above the instructions */
+        padding-top: 20px; /* Provide some padding above the CSV instructions */
+      }
+      input[type="file"],
+      input[type="submit"] {
+        display: block;
+        margin: 20px auto; /* Centered horizontally */
+      }
+      input[type="submit"] {
+        background-color: #61dafb; /* Light blue background color */
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 5px; /* Rounded corners */
+        color: #282c34;
+        transition: background-color 0.3s;
+      }
+      input[type="submit"]:hover {
+        background-color: #4fa0cb;
+      }
+      .info {
+        text-align: center;
+        width: 80%;
+        margin: auto;
+      }
+      ul {
+        list-style-type: none; /* No bullets */
+        padding: 0;
+        margin: 0 auto; /* Center the list */
+        text-align: left; /* Left align the text inside the list */
+        display: table; /* Makes the ul behave like a table for centering */
+      }
+      li {
+        margin-bottom: 5px;
+      }
+      footer {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        text-align: center;
+        font-size: 12px;
+        color: #61dafb;
+      }
+      a {
+        color: #61dafb;
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+    </style>
   </head>
   <body>
-    <h1>Upload CSV to Generate Map</h1>
+    <h1>Geo Topology Bubble Map</h1>
     <form action="/upload" method="post" enctype="multipart/form-data">
       <input type="file" name="datafile" />
-      <input type="submit" />
+      <input type="submit" value="Upload and Generate Map" />
     </form>
+    <div class="info">
+      <h2>CSV Upload Instructions</h2>
+      <p>Please upload a CSV file with the following columns:</p>
+      <ul>
+        <li><strong>Region</strong></li>
+        <li><strong>Country</strong></li>
+        <li><strong>Headquarters</strong></li>
+        <li><strong>Offices</strong></li>
+        <li><strong>Production Sites</strong></li>
+        <li><strong>R&I Centers</strong></li>
+      </ul>
+      <p>Ensure each column is properly labeled and the data is formatted correctly.</p>
+    </div>
+
+    <footer>
+      <a href="https://www.kaizenblue.io" target="_blank">Solution provided by Kaizen Blue</a>
+    </footer>
   </body>
 </html>
