@@ -1,0 +1,94 @@
+{% extends "base.html" %} {% block title %}
+<title>Global Topology Bubble Map</title>
+{% endblock %} {% block content %}
+<br />
+<div class="search-container">
+  <select id="countryDropdown" onchange="loadCitiesByCountry(this.value, 1)">
+    <option value="">Select a country</option>
+  </select>
+</div>
+
+<table class="table table-striped" id="citiesList">
+  <thead class="table-dark">
+    <tr>
+      <th>Name</th>
+      <th>Latitude</th>
+      <th>Longitude</th>
+      <th>Country Code</th>
+    </tr>
+  </thead>
+  <tbody id="cityTableBody"></tbody>
+</table>
+
+<div id="pagination">
+  <button onclick="changePage(-1)">Previous</button>
+  <span>Page <span id="currentPage">1</span> of <span id="totalPages">1</span></span>
+  <button onclick="changePage(1)">Next</button>
+</div>
+
+<div id="errorContainer"></div>
+
+<script>
+  let currentPage = 1;
+  let totalPages = 1;
+  let selectedCountryCode = "";
+
+  document.addEventListener("DOMContentLoaded", loadCountries);
+
+  function loadCountries() {
+    fetch("/api/countries")
+      .then((response) => response.json())
+      .then((data) => {
+        const dropdown = document.getElementById("countryDropdown");
+        for (let code in data) {
+          dropdown.appendChild(new Option(`${data[code]} (${code})`, code));
+        }
+      })
+      .catch((error) => console.error("Error loading countries:", error));
+  }
+
+  function loadCitiesByCountry(countryCode, page) {
+    selectedCountryCode = countryCode;
+    if (!countryCode) {
+      document.getElementById("cityTableBody").innerHTML = "";
+      updatePagination(1, 1); // Reset pagination
+      return;
+    }
+
+    fetch(`/api/cities/country/${encodeURIComponent(countryCode)}?page=${page}&per_page=20`)
+      .then((response) => response.json())
+      .then((data) => {
+        const tableBody = document.getElementById("cityTableBody");
+        tableBody.innerHTML = ""; // Clear previous entries
+        totalPages = data.total_pages || 1;
+        updatePagination(page, totalPages);
+
+        data.cities.forEach((city) => {
+          tableBody.innerHTML += `<tr>
+                <td>${city.name || "N/A"}</td>
+                <td>${city.lat.toFixed(2)}</td>
+                <td>${city.lng.toFixed(2)}</td>
+                <td>${city.country_code}</td>
+              </tr>`;
+        });
+      })
+      .catch((error) => {
+        console.error("Error loading city data:", error);
+        document.getElementById("cityTableBody").innerHTML = `<tr><td colspan="5" class="error-message">${error.message}</td></tr>`;
+      });
+  }
+
+  function changePage(step) {
+    const newPage = currentPage + step;
+    if (newPage < 1 || newPage > totalPages) return;
+    loadCitiesByCountry(selectedCountryCode, newPage);
+  }
+
+  function updatePagination(current, total) {
+    currentPage = current;
+    totalPages = total;
+    document.getElementById("currentPage").textContent = currentPage;
+    document.getElementById("totalPages").textContent = totalPages;
+  }
+</script>
+{% endblock %}

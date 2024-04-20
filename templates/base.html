@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    {% block title %}
+    <title>Global Topology Map Generator</title>
+    {% endblock %}
+  </head>
+  <body>
+    <header class="header-container">
+      <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="header-logo" />
+      <h1>Global Topology Bubble Map Generator</h1>
+      <!-- H1 element placed here -->
+      <nav class="top-right-links">
+        <ul>
+          <a href="/" class="theme-link">Upload CSV</a>
+          <a href="/cities" class="theme-link">Look Up City Coordinates</a>
+        </ul>
+      </nav>
+    </header>
+
+    {% block content %}{% endblock %}
+
+    <footer class="site-footer">
+      <p>© 2024 www.kaizenblue.io - Proudly Provided by Kaizen Blue</p>
+    </footer>
+  </body>
+</html>

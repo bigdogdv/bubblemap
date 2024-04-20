@@ -1,10 +1,18 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 import pandas as pd
 import folium
 from math import cos, sin, radians
+import math
+import csv
+from flask import Flask
+from flask_cors import CORS
+import logging
+import pycountry
+
+logging.basicConfig(level=logging.DEBUG)
 
 app = Flask(__name__)
-
+CORS(app)
 @app.route('/', methods=['GET'])
 def index():
     return render_template('upload.html')  # HTML form for file upload
@@ -67,5 +75,95 @@ def offset_location(lat, lon, index, max_offset):
     new_lon = lon + radius * sin(radians(angle))
     return new_lat, new_lon
 
+def extract_countries(cities_list):
+    country_dict = {}
+    for entry in cities_list:
+        country_code = entry['country_code']
+        app.logger.debug(country_code)
+        country = pycountry.countries.get(alpha_2=country_code)
+        if country:
+            country_name = country.name
+            app.logger.debug(country_name)
+            if country_code not in country_dict:
+                country_dict[country_code] = country_name
+    return country_dict
+
+def load_city_data(file_path):
+    cities_list = []
+    with open(file_path, 'r', encoding='utf-8') as file:
+        reader = csv.reader(file, delimiter='\t')
+        for row in reader:
+            if row:
+                try:
+                    city_entry = {
+                        'name': row[1],
+                        'lat': float(row[4]),
+                        'lng': float(row[5]),
+                        'country_code': row[8]
+                    }
+                    cities_list.append(city_entry)
+                except (IndexError, ValueError) as e:
+                    print(f"Data conversion error {e} in row: {row}")
+    return cities_list
+
+# When loading the data, replace the dictionary with a list:
+city_data = load_city_data('static/cities500.txt')
+
+
+@app.route('/api/city/<city_name>')
+def get_city_info(city_name):
+    matching_cities = [city for city in city_data if city['name'].lower() == city_name.lower()]
+    if matching_cities:
+        return jsonify(matching_cities)
+    else:
+        return jsonify({'error': 'City not found'}), 404
+        
+@app.route('/api/cities/country/<country_code>')
+def get_cities_by_country(country_code):
+    per_page = request.args.get('per_page', default=20, type=int)
+    page = request.args.get('page', default=1, type=int)
+    
+    # Filter cities by country code
+    filtered_cities = [city for city in city_data if city['country_code'].lower() == country_code.lower()]
+    sorted_cities = sorted(filtered_cities, key=lambda x: x['name'])
+    total = len(sorted_cities)
+    total_pages = math.ceil(total / per_page)
+
+    start = (page - 1) * per_page
+    end = start + per_page
+    result = sorted_cities[start:end]
+
+    return jsonify({'cities': result, 'total_pages': total_pages, 'current_page': page})
+
+
+@app.route('/cities')
+def cities():
+    return render_template('cities.html')
+
+@app.route('/api/countries')
+def get_countries():
+    country_dict = extract_countries(city_data)  # Use the loaded city data
+    app.logger.debug(country_dict)
+    return jsonify(country_dict)
+
+@app.route('/api/cities')
+def api_cities():
+    page = request.args.get('page', default=1, type=int)
+    per_page = request.args.get('per_page', default=50, type=int)  # Adjust default as needed
+    start = (page - 1) * per_page
+    end = start + per_page
+    cities_list = [dict(name=k, **v) for k, v in list(city_data.items())[start:end]]
+    return jsonify(cities_list)
+
+@app.route('/api/coordinates')
+def get_coordinates():
+    city_name = request.args.get('city', default=None, type=str)
+    if city_name and city_name.lower() in city_data:
+        city_info = city_data[city_name.lower()]
+        return jsonify({'lat': city_info['lat'], 'lng': city_info['lng']})
+    else:
+        return jsonify({'error': 'City not found'}), 404
+
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=50000)
