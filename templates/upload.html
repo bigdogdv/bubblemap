@@ -14,6 +14,9 @@
         <li><strong>Longitude</strong></li>
       </ul>
       <p>Add as many other data inputs as you like, a distinct bubble color will be automatially allocated</p>
+      {% if message %}
+<div style="color: red;">{{ message }}</div>
+{% endif %}
        <form action="/upload" method="post" enctype="multipart/form-data">
       <input type="file" name="datafile" />
       <input type="submit" value="Upload and Generate Map" />

@@ -36,18 +36,26 @@ def index():
 def upload():
     file = request.files['datafile']
     try:
+        # Attempt to read the CSV file
         data = pd.read_csv(file)
-        required_columns = {'Latitude', 'Longitude', 'Country', 'City'}
-
+        # Define the required columns
+        required_columns = {'Country', 'City', 'Latitude', 'Longitude'}
+        # Check if required columns are present
         if not required_columns.issubset(data.columns):
-            return jsonify({'error': 'Missing one or more required columns: Latitude, Longitude, Country'}), 400
-
+            return jsonify({'error': 'Missing one or more required columns: Latitude, Longitude, Country, City'}), 400
+        
+        # Validate if at least one facility type column is present
         facility_types = [col for col in data.columns if col not in required_columns]
         if not facility_types:
-            return jsonify({'error': 'No facility types found'}), 400
-
+            return jsonify({'error': 'No facility types found. Add columns for facilities apart from the required ones.'}), 400
+        
+        # Convert facility type columns to numeric and handle conversion errors
         for col in facility_types:
             data[col] = pd.to_numeric(data[col], errors='coerce').fillna(0)
+        
+        # Handling the case where all facility columns are non-numeric or all zero
+        if data[facility_types].sum().sum() == 0:
+            return jsonify({'error': 'No valid facility data found. Facility columns should contain numeric values.'}), 400
 
         max_count = data[facility_types].max().max() if data[facility_types].max().max() > 0 else 1
 
@@ -149,8 +157,11 @@ def upload():
         map_facilities.get_root().html.add_child(folium.Element(legend_html))
 
         return map_facilities._repr_html_()
+
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return render_template('upload.html', message=str(e))
+
+
 
 
 def extract_countries(cities_list):
