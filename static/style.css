@@ -6,6 +6,7 @@ body {
   padding: 0;
   background-color: #f0f2f5;
   color: #33415c;
+  padding-bottom: 60px;
 }
 
 /* Header and logo settings */
@@ -90,6 +91,7 @@ td {
 #pagination,
 #errorContainer {
   margin-top: 20px;
+  margin-bottom: 20px;
   text-align: center;
 }
 
@@ -126,4 +128,15 @@ button:hover {
   width: 50%; /* or your desired width */
   margin-left: auto;
   margin-right: auto;
+}
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(12, 95, 197, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(12, 95, 197, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(12, 95, 197, 0);
+  }
 }
