@@ -6,7 +6,7 @@
 
     <div class="info">
       <h2>CSV Upload Instructions</h2>
-      <p>Please upload any CSV file with up to 10 datapoints, but ensure you include the following:</p>
+      <p>Please upload any CSV file with up to 20 datapoints additional to the mandatory columns below.</p>
       <ul>
         <li><strong>Country</strong></li>
         <li><strong>City</strong></li>
@@ -18,6 +18,10 @@
       <input type="file" name="datafile" />
       <input type="submit" value="Upload and Generate Map" />
     </form>
+    <!-- Add this inside your <div class="info"> after the <p> tags -->
+<p>To see an example of a correctly formatted CSV, you can download a demo file:</p>
+<a href="/static/demo.csv" download="demo.csv">Download Demo CSV</a>
+
     </div>
 
 {% endblock %}

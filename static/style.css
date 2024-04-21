@@ -129,14 +129,14 @@ button:hover {
   margin-left: auto;
   margin-right: auto;
 }
-@keyframes pulse {
+@keyframes pulse-glow {
   0% {
-    box-shadow: 0 0 0 0 rgba(12, 95, 197, 0.7);
+    box-shadow: 0 0 0 0 rgba(12, 159, 197, 0.7);
   }
   70% {
-    box-shadow: 0 0 0 10px rgba(12, 95, 197, 0);
+    box-shadow: 0 0 0 20px rgba(12, 159, 197, 0);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(12, 95, 197, 0);
+    box-shadow: 0 0 0 0 rgba(12, 159, 197, 0);
   }
 }
